@@ -167,7 +167,14 @@
     <string name="menu_bottom_navigation_custom">Custom</string>
     <string name="menu_bottom_navigation_check">Check</string>
 
+    <string name="menu_cancel">Cancel</string>
     <string name="display_next_holiday">Next holiday: </string>
     <string name="display_next_lunar_holiday">Next lunar holiday: </string>
+    <string name="display_check_date">Check date</string>
+    <string name="display_selected_date">Selected date:</string>
+    <string name="display_select_date">Select date</string>
+    <string name="display_selected_date_label">" Select a date to view details."</string>
+    <string name="display_no_date_selected">Not selected</string>
+    <string name="menu_ok">OK</string>
 
 </resources>

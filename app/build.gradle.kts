@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.astronomy)
     implementation("dev.jamesyox:kastro:0.2.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

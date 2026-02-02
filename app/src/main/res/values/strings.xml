@@ -166,9 +166,15 @@
     <string name="menu_bottom_navigation_month">Miesiąc</string>
     <string name="menu_bottom_navigation_custom">Własne</string>
     <string name="menu_bottom_navigation_check">Sprawdź</string>
+    <string name="menu_ok">OK</string>
+    <string name="menu_cancel">Anuluj</string>
 
     <string name="display_next_holiday">Następne święto: </string>
     <string name="display_next_lunar_holiday">Następne święto lunarne: </string>
-    <string name="title_activity_check">CheckActivity</string>
+    <string name="display_check_date">Sprawdź datę</string>
+    <string name="display_selected_date">Wybrana data:</string>
+    <string name="display_select_date">Wybierz datę</string>
+    <string name="display_selected_date_label">Wybierz datę, by wyświetlić szczegóły.</string>
+    <string name="display_no_date_selected">Nie wybrano</string>
 
 </resources>
