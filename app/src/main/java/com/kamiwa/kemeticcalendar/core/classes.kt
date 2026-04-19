@@ -133,7 +133,7 @@ class KemeticDate(val day: Int, val month: Int){
 
 class LunarDate(val gregorianDate: LocalDate){
 
-    fun getLunarPhase(): Pair<Int, Double>{
+    fun getLunarPhase(): Triple<Int, Double, Double>{
         val dayInstant = LocalDateTime(gregorianDate.year, gregorianDate.month, gregorianDate.dayOfMonth, 0, 0, 0).toInstant(TimeZone.currentSystemDefault())
 
         val lunarPhase = LunarPhaseSequence(
@@ -143,20 +143,20 @@ class LunarDate(val gregorianDate: LocalDate){
 
         if (lunarPhase == null) {
             val illumination = dayInstant.calculateLunarIllumination()
-            val lunarPhaseAngle = LunarPhase.lunarPhase(illumination.illuminationAngle).midpointAngle
+            val lunarPhaseAngle = LunarPhase.lunarPhase(illumination.phase).midpointAngle
 
             when (lunarPhaseAngle) {
                 WaxingCrescent.midpointAngle -> {
-                    return  Pair<Int, Double>(R.string.lunar_phase_waxing_crescent_moon, lunarPhaseAngle)
+                    return  Triple<Int, Double, Double>(R.string.lunar_phase_waxing_crescent_moon, lunarPhaseAngle, illumination.fraction)
                 }
                 WaxingGibbous.midpointAngle -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_waxing_gibbous_moon, lunarPhaseAngle)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_waxing_gibbous_moon, lunarPhaseAngle, illumination.fraction)
                 }
                 WaningGibbous.midpointAngle -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_waning_gibbous_moon, lunarPhaseAngle)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_waning_gibbous_moon, lunarPhaseAngle, illumination.fraction)
                 }
                 WaningCrescent.midpointAngle -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_waning_crescent_moon, lunarPhaseAngle)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_waning_crescent_moon, lunarPhaseAngle, illumination.fraction)
                 }
             }
 
@@ -164,23 +164,23 @@ class LunarDate(val gregorianDate: LocalDate){
         else {
             when (lunarPhase) {
                 is LunarEvent.PhaseEvent.NewMoon -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_new_moon, LunarEvent.PhaseEvent.NewMoon.phase)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_new_moon, LunarEvent.PhaseEvent.NewMoon.phase, 0.0)
                 }
                 is LunarEvent.PhaseEvent.FirstQuarter -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_first_quarter, LunarEvent.PhaseEvent.FirstQuarter.phase)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_first_quarter, LunarEvent.PhaseEvent.FirstQuarter.phase, 0.5)
                 }
                 is LunarEvent.PhaseEvent.FullMoon-> {
-                    return Pair<Int, Double>(R.string.lunar_phase_full_moon, LunarEvent.PhaseEvent.FullMoon.phase)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_full_moon, LunarEvent.PhaseEvent.FullMoon.phase, 1.0)
                 }
                 is LunarEvent.PhaseEvent.LastQuarter -> {
-                    return Pair<Int, Double>(R.string.lunar_phase_third_quarter, LunarEvent.PhaseEvent.LastQuarter.phase)
+                    return Triple<Int, Double, Double>(R.string.lunar_phase_third_quarter, LunarEvent.PhaseEvent.LastQuarter.phase, 0.5)
                 }
 
-                else -> {return Pair<Int, Double>(R.string.error_invalid_moon_phase, -9999.99)}
+                else -> {return Triple<Int, Double, Double>(R.string.error_invalid_moon_phase, -9999.99, -9999.99)}
             }
         }
 
-        return Pair<Int, Double>(R.string.error_invalid_moon_phase, -9999.99)
+        return Triple<Int, Double, Double>(R.string.error_invalid_moon_phase, -9999.99, -9999.99)
     }
 
     fun getNextHolidays(): MutableList<Pair<LocalDate, Int>>{

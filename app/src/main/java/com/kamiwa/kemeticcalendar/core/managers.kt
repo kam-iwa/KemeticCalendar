@@ -13,7 +13,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Calendar
 
-// --- MODEL DANYCH DLA POWIADOMIEŃ ROCZNYCH ---
 data class SavedDate(
     val id: Int,
     val name: String,
@@ -24,7 +23,6 @@ data class SavedDate(
     val minute: Int          // Minuta (0-59)
 )
 
-// --- ZAPIS DANYCH (GSON) ---
 class StorageManager(private val context: Context) {
     private val prefs = context.getSharedPreferences("kemetic_prefs", Context.MODE_PRIVATE)
     private val gson = Gson()
@@ -44,7 +42,6 @@ class StorageManager(private val context: Context) {
     }
 }
 
-// --- RECEIVER POWIADOMIEŃ Z AUTOMATYCZNYM ODNAWIANIEM ---
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val name = intent.getStringExtra("name") ?: "Przypomnienie"
@@ -52,10 +49,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val id = intent.getIntExtra("id", 0)
         val isYearly = intent.getBooleanExtra("isYearly", false)
 
-        // Pokaż powiadomienie
         showNotification(context, id, name, description)
 
-        // Jeśli to alarm roczny, zaplanuj go ponownie na następny rok
         if (isYearly) {
             val dayOfMonth = intent.getIntExtra("dayOfMonth", 1)
             val month = intent.getIntExtra("month", 0)
@@ -78,7 +73,6 @@ class AlarmReceiver : BroadcastReceiver() {
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Ustaw datę na następny rok
         val calendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_MONTH, dayOfMonth)
             set(Calendar.MONTH, month)

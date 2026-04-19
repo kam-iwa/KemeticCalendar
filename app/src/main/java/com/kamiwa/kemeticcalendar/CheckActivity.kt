@@ -136,7 +136,7 @@ fun CheckActivityLayout(
                 text = getString(context, R.string.display_check_date),
                 style = MaterialTheme.typography.displaySmall,
                 color = TextColor,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(8.dp)
             )
 
             Row(

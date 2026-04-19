@@ -176,5 +176,14 @@
     <string name="display_selected_date_label">" Select a date to view details."</string>
     <string name="display_no_date_selected">Not selected</string>
     <string name="menu_ok">OK</string>
+    <string name="notifications_title_activity">Custom dates</string>
+    <string name="notifications_label_empty">The list is empty. To add a new date, click (+) in the lower right corner of the screen.</string>
+    <string name="notifications_title_new">New date</string>
+    <string name="notifications_label_name">Name</string>
+    <string name="notifications_label_desc">Description (optional)</string>
+    <string name="notifications_label_not_selected">Not selected</string>
+    <string name="notifications_button_select_date">Choose date and time</string>
+    <string name="menu_save">Save</string>
+    <string name="notifications_yearly">Every year:</string>
 
 </resources>

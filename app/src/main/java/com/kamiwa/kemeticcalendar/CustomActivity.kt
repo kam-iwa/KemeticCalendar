@@ -32,12 +32,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getString
 
 import com.kamiwa.kemeticcalendar.core.CustomBottomBar
 import com.kamiwa.kemeticcalendar.core.CustomTopBar
 import com.kamiwa.kemeticcalendar.ui.theme.BackgroundColor
 import com.kamiwa.kemeticcalendar.ui.theme.KemeticCalendarTheme
+import com.kamiwa.kemeticcalendar.ui.theme.MiscColor
+import com.kamiwa.kemeticcalendar.ui.theme.TextColor
 
 import java.util.Calendar
 
@@ -65,11 +69,11 @@ class CustomActivity : ComponentActivity() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "kemetic_reminders",
-                "Przypomnienia Kalendarz",
+                "kemetic_custom_reminders",
+                "Kemetic Calendar - custom reminders",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Powiadomienia o zapisanych datach"
+                description = "Reminders about custom dates."
             }
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -96,7 +100,8 @@ fun CustomActivityLayout(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = TextColor,
+                contentColor = BackgroundColor,
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Dodaj datę")
             }
@@ -105,10 +110,13 @@ fun CustomActivityLayout(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Twoje roczne przypomnienia",
+                text = getString(context, R.string.notifications_title_activity),
+                color = TextColor,
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(16.dp)
             )
@@ -119,14 +127,16 @@ fun CustomActivityLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Lista jest pusta. Dodaj nową datę!",
-                        style = MaterialTheme.typography.bodyLarge
+                        text = getString(context, R.string.notifications_label_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextColor,
+                        textAlign = TextAlign.Center,
                     )
                 }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 80.dp)
+                    contentPadding = PaddingValues(bottom = 80.dp, start = 16.dp, end = 16.dp),
                 ) {
                     items(savedDates) { dateRecord ->
                         DateItemRow(
@@ -169,12 +179,15 @@ fun CustomActivityLayout(
 
 @Composable
 fun DateItemRow(record: SavedDate, onDelete: () -> Unit) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MiscColor,
+            contentColor = BackgroundColor
         )
     ) {
         Row(
@@ -196,16 +209,16 @@ fun DateItemRow(record: SavedDate, onDelete: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Każdego roku: ${String.format("%02d.%02d", record.dayOfMonth, record.month + 1)} o ${String.format("%02d:%02d", record.hourOfDay, record.minute)}",
+                    text = "${getString(context, R.string.notifications_yearly)} ${String.format("%02d.%02d", record.dayOfMonth, record.month + 1)} o ${String.format("%02d:%02d", record.hourOfDay, record.minute)}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = BackgroundColor
                 )
             }
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Usuń",
-                    tint = MaterialTheme.colorScheme.error
+                    tint = BackgroundColor
                 )
             }
         }
@@ -217,18 +230,19 @@ fun AddDateDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, String, Int, Int, Int, Int) -> Unit
 ) {
+    val context = LocalContext.current
+
     var name by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
     var selectedDay by remember { mutableStateOf<Int?>(null) }
     var selectedMonth by remember { mutableStateOf<Int?>(null) }
     var selectedHour by remember { mutableStateOf<Int?>(null) }
     var selectedMinute by remember { mutableStateOf<Int?>(null) }
-    var selectedDateText by remember { mutableStateOf("Nie wybrano") }
-    val context = LocalContext.current
+    var selectedDateText by remember { mutableStateOf(getString(context, R.string.notifications_label_not_selected)) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Nowe przypomnienie roczne") },
+        title = { Text(getString(context, R.string.notifications_title_new)) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -236,7 +250,7 @@ fun AddDateDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nazwa") },
+                    label = { Text(getString(context, R.string.notifications_label_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -244,7 +258,7 @@ fun AddDateDialog(
                 OutlinedTextField(
                     value = desc,
                     onValueChange = { desc = it },
-                    label = { Text("Opis (opcjonalnie)") },
+                    label = { Text(getString(context, R.string.notifications_label_desc)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
@@ -270,7 +284,7 @@ fun AddDateDialog(
                                     { _, hourOfDay, minute ->
                                         selectedHour = hourOfDay
                                         selectedMinute = minute
-                                        selectedDateText = "Każdego roku: ${String.format("%02d.%02d", dayOfMonth, month + 1)} o ${String.format("%02d:%02d", hourOfDay, minute)}"
+                                        selectedDateText = "${getString(context, R.string.notifications_yearly)} ${String.format("%02d.%02d", dayOfMonth, month + 1)} o ${String.format("%02d:%02d", hourOfDay, minute)}"
                                     },
                                     12,
                                     0,
@@ -284,7 +298,7 @@ fun AddDateDialog(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Wybierz dzień, miesiąc i godzinę")
+                    Text(getString(context, R.string.notifications_button_select_date))
                 }
             }
         },
@@ -299,12 +313,12 @@ fun AddDateDialog(
                 enabled = name.isNotBlank() && selectedDay != null && selectedMonth != null &&
                         selectedHour != null && selectedMinute != null
             ) {
-                Text("Zapisz")
+                Text(getString(context, R.string.menu_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Anuluj")
+                Text(getString(context, R.string.menu_cancel))
             }
         }
     )

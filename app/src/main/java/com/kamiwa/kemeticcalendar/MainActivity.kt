@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
             .joinToString("; ")
 
         val lunarPhaseText = getString(lunarToday.getLunarPhase().first)
+        val lunarPhasePercent = lunarToday.getLunarPhase().third * 100
         val lunarHolidayText = getString(lunarToday.getHoliday())
 
         setContent {
@@ -67,6 +68,7 @@ class MainActivity : ComponentActivity() {
                         kemeticDayTypeText = kemeticDayTypeText,
                         kemeticHolidaysText = kemeticHolidaysText,
                         lunarPhaseText = lunarPhaseText,
+                        lunarPhasePercent = lunarPhasePercent,
                         lunarHolidayText = lunarHolidayText
 
                     )
@@ -87,6 +89,7 @@ fun MainActivityLayout(
     kemeticDayTypeText: String,
     kemeticHolidaysText: String,
     lunarPhaseText: String,
+    lunarPhasePercent: Double,
     lunarHolidayText: String
 ) {
     val context = LocalContext.current
@@ -154,7 +157,7 @@ fun MainActivityLayout(
                 )
 
                 Text(
-                    text = lunarPhaseText,
+                    text = String.format("$lunarPhaseText (%.0f %%)", lunarPhasePercent),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelLarge,
                     color = TextColor,
