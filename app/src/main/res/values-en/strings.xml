@@ -168,6 +168,7 @@
     <string name="menu_bottom_navigation_check">Check</string>
 
     <string name="menu_cancel">Cancel</string>
+    <string name="widget_updates">"Next update: "</string>
     <string name="display_next_holiday">Next holiday: </string>
     <string name="display_next_lunar_holiday">Next lunar holiday: </string>
     <string name="display_check_date">Check date</string>
@@ -185,5 +186,6 @@
     <string name="notifications_button_select_date">Choose date and time</string>
     <string name="menu_save">Save</string>
     <string name="notifications_yearly">Every year:</string>
+    <string name="widget_updated">"Updated: "</string>
 
 </resources>
