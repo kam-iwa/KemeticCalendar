@@ -166,9 +166,9 @@
     <string name="menu_bottom_navigation_month">Miesiąc</string>
     <string name="menu_bottom_navigation_custom">Własne</string>
     <string name="menu_bottom_navigation_check">Sprawdź</string>
+    <string name="menu_bottom_navigation_settings">Ustawienia</string>
 
     <string name="menu_cancel">Anuluj</string>
-    <string name="widget_updates">"Następna aktualizacja: "</string>
     <string name="display_next_holiday">Następne święto: </string>
     <string name="display_next_lunar_holiday">Następne święto lunarne: </string>
     <string name="display_check_date">Sprawdź datę</string>
@@ -186,6 +186,9 @@
     <string name="notifications_button_select_date">Wybierz datę i godzinę</string>
     <string name="menu_save">Zapisz</string>
     <string name="notifications_yearly">Każdego roku:</string>
-    <string name="widget_updated">"Zaktualizowano: "</string>
+
+    <string name="widget_updated_at">"Zaktualizowano: "</string>
+
+    <string name="settings_disable_battery_optimization">Jeśli widżet się nie odświeża - wyłącz optymalizację baterii (przejście do Ustawień systemowych)</string>
 
 </resources>

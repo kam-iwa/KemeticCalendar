@@ -30,6 +30,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -243,6 +244,9 @@ fun AddDateDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(getString(context, R.string.notifications_title_new)) },
+        containerColor = BackgroundColor,
+        titleContentColor = TextColor, // kolor tytułu
+        textContentColor = TextColor, // kolor treści
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -252,6 +256,14 @@ fun AddDateDialog(
                     onValueChange = { name = it },
                     label = { Text(getString(context, R.string.notifications_label_name)) },
                     modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = TextColor,
+                        unfocusedBorderColor = MiscColor,
+                        cursorColor = TextColor,
+                        focusedLabelColor = TextColor,
+                        unfocusedLabelColor = MiscColor
+
+                    ),
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -260,6 +272,13 @@ fun AddDateDialog(
                     onValueChange = { desc = it },
                     label = { Text(getString(context, R.string.notifications_label_desc)) },
                     modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = TextColor,
+                        unfocusedBorderColor = MiscColor,
+                        cursorColor = TextColor,
+                        focusedLabelColor = TextColor,
+                        unfocusedLabelColor = MiscColor
+                    ),
                     maxLines = 3
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -296,6 +315,7 @@ fun AddDateDialog(
                             calendar.get(Calendar.DAY_OF_MONTH)
                         ).show()
                     },
+                    colors = ButtonDefaults.textButtonColors(containerColor = MiscColor, contentColor = BackgroundColor),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(getString(context, R.string.notifications_button_select_date))
@@ -310,6 +330,7 @@ fun AddDateDialog(
                         onConfirm(name, desc, selectedDay!!, selectedMonth!!, selectedHour!!, selectedMinute!!)
                     }
                 },
+                colors = ButtonDefaults.textButtonColors(contentColor = TextColor),
                 enabled = name.isNotBlank() && selectedDay != null && selectedMonth != null &&
                         selectedHour != null && selectedMinute != null
             ) {
@@ -317,7 +338,10 @@ fun AddDateDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(contentColor = TextColor)
+            ) {
                 Text(getString(context, R.string.menu_cancel))
             }
         }
@@ -360,7 +384,7 @@ fun scheduleYearlyAlarm(context: Context, record: SavedDate) {
     )
 
     try {
-        alarmManager.setExactAndAllowWhileIdle(
+        alarmManager.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
             pendingIntent

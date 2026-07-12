@@ -129,6 +129,19 @@ class KemeticDate(val day: Int, val month: Int){
         }
     }
 
+    /**
+     * Oblicza datę gregoriańską dla TEGO obiektu KemeticDate,
+     * na podstawie znanej pary (referenceGregorian, referenceKemetic)
+     * z tego samego miesiąca kemetyckiego.
+     */
+    fun toGregorian(referenceGregorian: LocalDate, referenceKemetic: KemeticDate): LocalDate {
+        require(this.month == referenceKemetic.month) {
+            "toGregorian zakłada ten sam miesiąc kemetycki co punkt odniesienia"
+        }
+        val offset = this.day - referenceKemetic.day
+        return referenceGregorian.plusDays(offset.toLong())
+    }
+
 }
 
 class LunarDate(val gregorianDate: LocalDate){

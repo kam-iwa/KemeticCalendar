@@ -1,17 +1,14 @@
 package com.kamiwa.kemeticcalendar
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
-import android.widget.RemoteViews
-import androidx.core.content.ContextCompat.getString
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.kamiwa.kemeticcalendar.core.KemeticDate
 import com.kamiwa.kemeticcalendar.core.LunarDate
-import com.kamiwa.kemeticcalendar.ui.theme.TextColor
-import com.kamiwa.kemeticcalendar.ui.theme.TextDecadeColor
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -29,39 +26,56 @@ class KemeticWidgetUpdateWorker(
             val gregorianDayText = gregorianToday.format(
                 DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", Locale.getDefault())
             )
-            val kemeticMonthText = getString(applicationContext, kemeticToday.getMonth().key)
+            val kemeticMonthText = applicationContext.getString(kemeticToday.getMonth().key)
             val kemeticDayText = kemeticToday.day.toString()
-            val kemeticDayTypeText = getString(applicationContext, kemeticToday.getDayType())
-            val kemeticHolidaysText = kemeticToday.getHolidays().map { getString(applicationContext, it.key) }
-                .toTypedArray()
+            val kemeticDayTypeText = applicationContext.getString(kemeticToday.getDayType())
+            val kemeticHolidaysText = kemeticToday.getHolidays()
+                .map { applicationContext.getString(it.key) }
                 .joinToString("; ")
 
-            updateKemeticWidget(applicationContext, gregorianDayText, kemeticMonthText, kemeticDayText,
-                kemeticDayTypeText, kemeticHolidaysText, kemeticToday)
+            updateAllGlanceWidgets(
+                applicationContext,
+                gregorianDayText,
+                kemeticMonthText,
+                kemeticDayText,
+                kemeticDayTypeText,
+                kemeticHolidaysText,
+                kemeticToday.decade
+            )
             Result.success()
         } catch (e: Exception) {
-            // W razie błędu WorkManager sam ponowi próbę
             Result.retry()
         }
     }
 
-    private fun updateKemeticWidget(context: Context, gregorian_day: String, kemetic_month: String,
-                                    kemetic_day: String, kemetic_day_type: String, kemetic_holidays: String,
-                                    kemetic_date: KemeticDate) {
-        val manager = AppWidgetManager.getInstance(context)
-        val ids = manager.getAppWidgetIds(
-            ComponentName(context, KemeticWidgetProvider::class.java)
-        )
+    private suspend fun updateAllGlanceWidgets(
+        context: Context,
+        gregorianDay: String,
+        kemeticMonth: String,
+        kemeticDay: String,
+        kemeticDayType: String,
+        kemeticHolidays: String,
+        isDecade: Boolean
+    ) {
+        val manager = GlanceAppWidgetManager(context)
+        val glanceIds = manager.getGlanceIds(KemeticGlanceWidget::class.java)
 
-        for (id in ids) {
-            val views = RemoteViews(context.packageName, R.layout.kemetic_widget)
-            views.setTextViewText(R.id.gregorian_date_text_view, gregorian_day)
-            views.setTextViewText(R.id.kemetic_month_text_view, kemetic_month)
-            views.setTextViewText(R.id.kemetic_day_text_view, kemetic_day)
-            views.setInt(R.id.kemetic_day_text_view, "setTextColor", if (kemetic_date.decade) R.color.text_decade else R.color.text)
-            views.setTextViewText(R.id.kemetic_day_type_text_view, kemetic_day_type)
-            views.setTextViewText(R.id.kemetic_holiday_text_view, kemetic_holidays)
-            manager.updateAppWidget(id, views)
+        val updated = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"))
+        val updatedText = applicationContext.getString(R.string.widget_updated_at)
+
+        val updatedWithDate = "$updatedText $updated"
+
+        for (glanceId in glanceIds) {
+            updateAppWidgetState(context, glanceId) { prefs ->
+                prefs[KemeticWidgetKeys.GREGORIAN_DAY] = gregorianDay
+                prefs[KemeticWidgetKeys.KEMETIC_MONTH] = kemeticMonth
+                prefs[KemeticWidgetKeys.KEMETIC_DAY] = kemeticDay
+                prefs[KemeticWidgetKeys.KEMETIC_DAY_TYPE] = kemeticDayType
+                prefs[KemeticWidgetKeys.KEMETIC_HOLIDAYS] = kemeticHolidays
+                prefs[KemeticWidgetKeys.IS_DECADE] = isDecade
+                prefs[KemeticWidgetKeys.UPDATED_AT] = updatedWithDate
+            }
+            KemeticGlanceWidget().update(context, glanceId)
         }
     }
 }

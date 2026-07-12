@@ -89,6 +89,7 @@ fun CheckActivityLayout(
 
         if (showDatePicker) {
             DatePickerDialog(
+                colors = DatePickerDefaults.colors(BackgroundColor),
                 onDismissRequest = { showDatePicker = false },
                 confirmButton = {
                     TextButton(
@@ -113,14 +114,44 @@ fun CheckActivityLayout(
                             }
                             showDatePicker = false
                         },
-                        enabled = confirmEnabled.value
+                        enabled = confirmEnabled.value,
+                        colors = ButtonDefaults.textButtonColors(containerColor = BackgroundColor, contentColor = TextColor),
                     ) { Text(getString(context, R.string.menu_ok)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDatePicker = false }) { Text(getString(context, R.string.menu_cancel)) }
+                    TextButton(
+                        onClick = { showDatePicker = false },
+                        colors = ButtonDefaults.textButtonColors(containerColor = BackgroundColor, contentColor = TextColor),
+                    ) { Text(getString(context, R.string.menu_cancel)) }
                 }
             ) {
-                DatePicker(state = datePickerState)
+                DatePicker(
+                    state = datePickerState,
+                    colors = DatePickerDefaults.colors(
+                        containerColor = BackgroundColor,
+                        titleContentColor = TextColor,
+                        headlineContentColor = TextColor,
+                        dayContentColor = TextColor,
+                        weekdayContentColor = TextColor,
+                        selectedDayContainerColor = TextColor,
+                        selectedDayContentColor = BackgroundColor,
+                        selectedYearContainerColor = TextColor,
+                        selectedYearContentColor = BackgroundColor,
+                        subheadContentColor = TextColor,
+                        dividerColor = TextColor,
+                        yearContentColor = TextColor,
+                        todayDateBorderColor = TextColor,
+                        todayContentColor = TextColor,
+                        navigationContentColor = TextColor,
+                        dateTextFieldColors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = TextColor,
+                            unfocusedBorderColor = MiscColor,
+                            cursorColor = TextColor,
+                            focusedLabelColor = TextColor,
+                            unfocusedLabelColor = MiscColor
+                        )
+                    ),
+                )
             }
         }
 

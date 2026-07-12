@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -27,6 +28,7 @@ import com.kamiwa.kemeticcalendar.CheckActivity
 import com.kamiwa.kemeticcalendar.CustomActivity
 import com.kamiwa.kemeticcalendar.MainActivity
 import com.kamiwa.kemeticcalendar.MonthActivity
+import com.kamiwa.kemeticcalendar.SettingsActivity
 import com.kamiwa.kemeticcalendar.R
 import com.kamiwa.kemeticcalendar.ui.theme.BackgroundColor
 import com.kamiwa.kemeticcalendar.ui.theme.TextColor
@@ -82,6 +84,14 @@ fun CustomBottomBar(context: Context, currentActivityId: Int) {
             context,
             CheckActivity::class.java,
             3,
+            currentActivityId
+        )
+        CustomNavigationBarItem(
+            Icons.Default.Settings,
+            R.string.menu_bottom_navigation_settings,
+            context,
+            SettingsActivity::class.java,
+            4,
             currentActivityId
         )
     }

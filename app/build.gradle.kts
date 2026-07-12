@@ -72,7 +72,7 @@ dependencies {
     implementation("dev.jamesyox:kastro:0.2.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.glance:glance-appwidget:1.1.0")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
