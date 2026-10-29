@@ -1,11 +1,9 @@
 package com.kamiwa.kemeticcalendar
 
 import android.app.AlarmManager
-import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -44,6 +42,8 @@ import com.kamiwa.kemeticcalendar.ui.theme.KemeticCalendarTheme
 import com.kamiwa.kemeticcalendar.ui.theme.MiscColor
 import com.kamiwa.kemeticcalendar.ui.theme.TextColor
 
+import java.time.Instant
+import java.time.ZoneId
 import java.util.Calendar
 
 
@@ -210,7 +210,7 @@ fun DateItemRow(record: SavedDate, onDelete: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${getString(context, R.string.notifications_yearly)} ${String.format("%02d.%02d", record.dayOfMonth, record.month + 1)} o ${String.format("%02d:%02d", record.hourOfDay, record.minute)}",
+                    text = "${getString(context, R.string.notifications_yearly)} ${String.format("%02d.%02d", record.dayOfMonth, record.month + 1)} ${String.format("%02d:%02d", record.hourOfDay, record.minute)}",
                     style = MaterialTheme.typography.labelSmall,
                     color = BackgroundColor
                 )
@@ -237,9 +237,12 @@ fun AddDateDialog(
     var desc by remember { mutableStateOf("") }
     var selectedDay by remember { mutableStateOf<Int?>(null) }
     var selectedMonth by remember { mutableStateOf<Int?>(null) }
-    var selectedHour by remember { mutableStateOf<Int?>(null) }
-    var selectedMinute by remember { mutableStateOf<Int?>(null) }
+    val selectedHour = 12
+    val selectedMinute = 0
     var selectedDateText by remember { mutableStateOf(getString(context, R.string.notifications_label_not_selected)) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -290,31 +293,7 @@ fun AddDateDialog(
                 )
 
                 Button(
-                    onClick = {
-                        val calendar = Calendar.getInstance()
-                        DatePickerDialog(
-                            context,
-                            { _, _, month, dayOfMonth ->
-                                selectedDay = dayOfMonth
-                                selectedMonth = month
-
-                                TimePickerDialog(
-                                    context,
-                                    { _, hourOfDay, minute ->
-                                        selectedHour = hourOfDay
-                                        selectedMinute = minute
-                                        selectedDateText = "${getString(context, R.string.notifications_yearly)} ${String.format("%02d.%02d", dayOfMonth, month + 1)} o ${String.format("%02d:%02d", hourOfDay, minute)}"
-                                    },
-                                    12,
-                                    0,
-                                    true
-                                ).show()
-                            },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH)
-                        ).show()
-                    },
+                    onClick = { showDatePicker = true },
                     colors = ButtonDefaults.textButtonColors(containerColor = MiscColor, contentColor = BackgroundColor),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -325,14 +304,12 @@ fun AddDateDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (name.isNotBlank() && selectedDay != null && selectedMonth != null &&
-                        selectedHour != null && selectedMinute != null) {
-                        onConfirm(name, desc, selectedDay!!, selectedMonth!!, selectedHour!!, selectedMinute!!)
+                    if (name.isNotBlank() && selectedDay != null && selectedMonth != null) {
+                        onConfirm(name, desc, selectedDay!!, selectedMonth!!, selectedHour, selectedMinute)
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(contentColor = TextColor),
-                enabled = name.isNotBlank() && selectedDay != null && selectedMonth != null &&
-                        selectedHour != null && selectedMinute != null
+                enabled = name.isNotBlank() && selectedDay != null && selectedMonth != null
             ) {
                 Text(getString(context, R.string.menu_save))
             }
@@ -346,6 +323,69 @@ fun AddDateDialog(
             }
         }
     )
+
+    // --- Material3 DatePickerDialog ---
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            colors = DatePickerDefaults.colors(BackgroundColor),
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val localDate = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.of("UTC"))
+                            .toLocalDate()
+                        selectedDay = localDate.dayOfMonth
+                        selectedMonth = localDate.monthValue - 1 // Calendar.MONTH jest 0-indeksowany
+                        selectedDateText = "${getString(context, R.string.notifications_yearly)} " +
+                                "${String.format("%02d.%02d", selectedDay, selectedMonth!! + 1)} o " +
+                                String.format("%02d:%02d", selectedHour, selectedMinute)
+                    }
+                    showDatePicker = false
+                },
+                    colors = ButtonDefaults.textButtonColors(containerColor = BackgroundColor, contentColor = TextColor),
+                ) {
+                    Text(getString(context, R.string.menu_save))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false },
+                    colors = ButtonDefaults.textButtonColors(containerColor = BackgroundColor, contentColor = TextColor),
+                ) {
+                    Text(getString(context, R.string.menu_cancel))
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = BackgroundColor,
+                    titleContentColor = TextColor,
+                    headlineContentColor = TextColor,
+                    dayContentColor = TextColor,
+                    weekdayContentColor = TextColor,
+                    selectedDayContainerColor = TextColor,
+                    selectedDayContentColor = BackgroundColor,
+                    selectedYearContainerColor = TextColor,
+                    selectedYearContentColor = BackgroundColor,
+                    subheadContentColor = TextColor,
+                    dividerColor = TextColor,
+                    yearContentColor = TextColor,
+                    todayDateBorderColor = TextColor,
+                    todayContentColor = TextColor,
+                    navigationContentColor = TextColor,
+                    dateTextFieldColors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = TextColor,
+                        unfocusedBorderColor = MiscColor,
+                        cursorColor = TextColor,
+                        focusedLabelColor = TextColor,
+                        unfocusedLabelColor = MiscColor)
+                )
+            )
+        }
+    }
 }
 
 
